@@ -15,7 +15,6 @@ import br.ufal.ic.p2.jackut.Exceptions.*;
 
 public class Facade {
     private final System system;
-
     /**
      * <p> Constrói um novo {@code Facade} e inicializa uma instância do {@link System}. </p>
      * 
@@ -436,5 +435,25 @@ public class Facade {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void criarComunidade(String id, String nome, String descricao) 
+    	throws UserNotRegisteredException, ComunidadeAlreadyExistsException{
+    	User usuario = this.system.getSessaoUsuario(id);
+    	
+    	system.criarComunidade(usuario, nome, descricao);
+    	
+    }
+    
+    public String getDescricaoComunidade(String nome) throws ComunidadeNotExistException {
+        return this.system.getDescricaoComunidade(nome);
+    }
+    
+    public String getDonoComunidade(String nome) throws ComunidadeNotExistException {
+        return this.system.getDonoComunidade(nome);
+    }
+    
+    public String getMembrosComunidade(String nome) throws ComunidadeNotExistException {
+        return this.system.getMembrosComunidade(nome);
     }
 }

@@ -15,11 +15,12 @@ public class User {
     private final Queue<Messages> messages;
     private final String name;
     private final Profile profile;
-
+    
     private final ArrayList<User> receivedSolicitations;
     private final ArrayList<User> sendSolicitations;
 
-
+    private final ArrayList<Comunidade> comunidadesProprietarias = new ArrayList<>();
+    private final ArrayList<Comunidade> comunidadesParticipantes = new ArrayList<>();
     /**
      * <p> Constrói um novo {@code Usuario} do Jackut. </p>
      * <p> Inicializa um {@code Perfil} para o usuário, as listas de amigos, solicitações enviadas e solicitações recebidas. </p>
@@ -195,4 +196,13 @@ public class User {
     public Queue<Messages> getRecados() {
         return this.messages;
     }
+    
+    public void setCriadorComunidade(Comunidade comunidade) {
+        this.comunidadesProprietarias.add(comunidade);
+    }
+    
+    public void setParticipanteComunidade(Comunidade comunidade) {
+        this.comunidadesParticipantes.add(comunidade);
+    }
+
 }

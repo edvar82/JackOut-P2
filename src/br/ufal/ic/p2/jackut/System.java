@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import br.ufal.ic.p2.jackut.Exceptions.ComunidadeAlreadyExistsException;
+import br.ufal.ic.p2.jackut.Exceptions.ComunidadeNotExistException;
+
 /**
  * <p> Classe que representa o sistema. </p>
  */
@@ -11,7 +14,8 @@ import java.util.UUID;
 public class System {
     private Map<String, User> sessions;
     private Map<String, User> users;
-
+    private Map<String, Comunidade> comunidades = new HashMap<>();
+    
 
     /**
      * <p> Constrói um novo {@code Sistema} responsável por
@@ -112,4 +116,43 @@ public class System {
         this.users = new HashMap<>();
         this.sessions = new HashMap<>();
     }
+    
+    public Comunidade getComunidade(String nome) throws ComunidadeNotExistException {
+        if (!this.comunidades.containsKey(nome)) {
+            throw new ComunidadeNotExistException();
+        }
+
+        return this.comunidades.get(nome);
+    }
+
+    
+    public void criarComunidade(User dono, String nome, String descricao) throws ComunidadeAlreadyExistsException{
+    	if(this.comunidades.containsKey(nome)) {
+    		throw new ComunidadeAlreadyExistsException();
+    	}
+    	else {
+    		Comunidade comunidade = new Comunidade(dono, nome,descricao);
+    		this.comunidades.put(nome, comunidade);
+    		dono.setCriadorComunidade(comunidade);
+    	    dono.setParticipanteComunidade(comunidade);
+    	}
+    }
+    
+    public String getDescricaoComunidade(String nome) throws ComunidadeNotExistException {
+        Comunidade comunidade = this.getComunidade(nome);
+
+        return comunidade.getDescricao();
+    }
+    
+    public String getDonoComunidade(String nome) throws ComunidadeNotExistException {
+        Comunidade comunidade = this.getComunidade(nome);
+
+        return comunidade.getCriador().getLogin();
+    }
+    public String getMembrosComunidade(String nome) throws ComunidadeNotExistException {
+        Comunidade comunidade = this.getComunidade(nome);
+
+        return comunidade.getMembrosString();
+    }
+
 }
