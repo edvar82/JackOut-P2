@@ -10,6 +10,7 @@ import java.util.UUID;
 
 import br.ufal.ic.p2.jackut.Exceptions.ComunidadeAlreadyExistsException;
 import br.ufal.ic.p2.jackut.Exceptions.ComunidadeNotExistException;
+import br.ufal.ic.p2.jackut.Exceptions.UnfilledAttributeException;
 
 /**
  * <p> Classe que representa o sistema. </p>
@@ -211,7 +212,16 @@ public class System {
             e.printStackTrace();
         }
     }
-    	
+    
+    public void encerrarSistema() throws UnfilledAttributeException {
+        try {
+            UtilsFileHandler.criarPasta();
+
+            UtilsFileHandler.persistirDados(this.users, this.comunidades);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * <p> Adiciona um usuário ao sistema. </p>

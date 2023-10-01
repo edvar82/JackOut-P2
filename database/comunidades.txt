@@ -1,0 +1,4 @@
+jpsauve;Professores da UFCG;Comunidade para professores da UFCG;{jpsauve}
+jpsauve;UFCG;Comunidade para professores, alunos e funcionários da UFCG;{jpsauve}
+jpsauve;UFCG2;Comunidade para professores, alunos e funcionários da UFCG;{jpsauve}
+oabath;Alunos da UFCG;Comunidade para alunos da UFCG;{oabath}

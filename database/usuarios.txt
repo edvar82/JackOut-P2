@@ -1,2 +1,2 @@
-jpsauve;sauvejp;Jacques Sauve
-oabath;abatho;Osorio Abath
+jpsauve;sauvejp;Jacques Sauve;{UFCG,Professores da UFCG,UFCG2}
+oabath;abatho;Osorio Abath;{Alunos da UFCG}

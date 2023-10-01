@@ -300,67 +300,14 @@ public class Facade {
      */
 
     public void encerrarSistema() throws UnfilledAttributeException {
-        try {
-            File arquivoUsuarios = new File("./database/usuarios.txt");
-            arquivoUsuarios.createNewFile();
-
-            FileWriter fw = new FileWriter(arquivoUsuarios);
-            BufferedWriter bw = new BufferedWriter(fw);
-
-            for (User usuario : this.system.getUsuarios().values()) {
-                bw.write(usuario.getLogin() + ";" + usuario.getSenha() + ";" + usuario.getNome());
-                for (String atributo : usuario.getProfile().getAtributos().keySet()) {
-                    bw.write(";" + atributo + ":" + usuario.getProfile().getAtributo(atributo));
-                }
-                bw.newLine();
-            }
-
-            bw.flush();
-            bw.close();
-            fw.close();
-
-            File arquivoAmigos = new File("./database/amigos.txt");
-            arquivoAmigos.createNewFile();
-
-            FileWriter fw2 = new FileWriter(arquivoAmigos);
-            BufferedWriter bw2 = new BufferedWriter(fw2);
-
-            for (User usuario : this.system.getUsuarios().values()) {
-                String amigos = this.getAmigos(usuario.getLogin());
-                bw2.write(usuario.getLogin() + ";" + amigos);
-                bw2.newLine();
-            }
-
-            bw2.flush();
-            bw2.close();
-            fw2.close();
-
-            File arquivoRecados = new File("./database/recados.txt");
-            arquivoRecados.createNewFile();
-
-            FileWriter fw3 = new FileWriter(arquivoRecados);
-            BufferedWriter bw3 = new BufferedWriter(fw3);
-
-            for (User usuario : this.system.getUsuarios().values()) {
-                for (Messages messages : usuario.getRecados()) {
-                    bw3.write(usuario.getLogin() + ";" + messages.getRemetente().getLogin() + ";" + messages.getRecado());
-                    bw3.newLine();
-                }
-            }
-
-            bw3.flush();
-            bw3.close();
-            fw3.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.system.encerrarSistema();
     }
     
-    public void criarComunidade(String id, String nome, String descricao) 
+    public void criarComunidade(String id, String name, String description) 
     	throws UserNotRegisteredException, ComunidadeAlreadyExistsException{
     	User usuario = this.system.getSessaoUsuario(id);
     	
-    	system.criarComunidade(usuario, nome, descricao);
+    	system.criarComunidade(usuario, name, description);
     	
     }
     
