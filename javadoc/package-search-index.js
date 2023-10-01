@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"br.ufal.ic.p2.jackut"}]
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"br.ufal.ic.p2.jackut"},{"l":"br.ufal.ic.p2.jackut.Exceptions"}];updateSearchResults();

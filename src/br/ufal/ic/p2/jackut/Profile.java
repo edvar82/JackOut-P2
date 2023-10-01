@@ -2,48 +2,46 @@ package br.ufal.ic.p2.jackut;
 
 import java.util.HashMap;
 import java.util.Map;
-import br.ufal.ic.p2.jackut.Exceptions.UnfilledAttributeException;
+
+import br.ufal.ic.p2.jackut.Exceptions.AttributeNotFilledException;
 
 /**
- * <p> Classe que representa um perfil de usuário. </p>
+ * <p> Class representing a user's profile. </p>
  */
 public class Profile {
     private final Map<String, String> attributes = new HashMap<>();
 
     /**
-     * <p> Adiciona um atributo ao perfil. </p>
+     * <p> Adds an attribute to the profile. </p>
      *
-     * @param chave Nome do atributo.
-     * @param valor Valor do atributo.
+     * @param key   Name of the attribute.
+     * @param value Value of the attribute.
      */
-
-    public void setAtributo(String chave, String valor) {
-        this.attributes.put(chave, valor);
+    public void setAtributo(String key, String value) {
+        this.attributes.put(key, value);
     }
 
     /**
-     * <p> Retorna o valor de um atributo do perfil. </p>
+     * <p> Returns the value of a profile attribute. </p>
      *
-     * @param chave  Chave do atributo.
-     * @return       Valor do atributo.
+     * @param key The attribute key.
+     * @return The attribute's value.
      *
-     * @throws UnfilledAttributeException Exceção que indica que o atributo não foi preenchido.
+     * @throws AttributeNotFilledException Exception indicating that the attribute is not filled.
      */
-
-    public String getAtributo(String chave) throws UnfilledAttributeException {
-        if (this.attributes.containsKey(chave)) {
-            return this.attributes.get(chave);
+    public String getAtributo(String key) throws AttributeNotFilledException {
+        if (this.attributes.containsKey(key)) {
+            return this.attributes.get(key);
         } else {
-            throw new UnfilledAttributeException();
+            throw new AttributeNotFilledException();
         }
     }
 
     /**
-     * <p> Retorna todos os atributos do perfil. </p>
+     * <p> Returns all the attributes of the profile. </p>
      *
-     * @return Map com todos os atributos do perfil.
+     * @return Map containing all the attributes of the profile.
      */
-
     public Map<String, String> getAtributos() {
         return this.attributes;
     }

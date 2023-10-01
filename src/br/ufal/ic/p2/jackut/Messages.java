@@ -1,61 +1,23 @@
 package br.ufal.ic.p2.jackut;
 
-/**
- * <p> Classe que representa um recado. </p>
- */
-
 public class Messages {
-    private final User remetente;
-    private final User destinatario;
-    private final String recado;
+    private final String message;
 
     /**
-     * <p> Constrói um novo {@code Recado} enviado de um {@code Usuario} para outro. </p>
+     * <p> Constructs a new {@code Messages} object with the specified message. </p>
      *
-     * @param remetente     Remetente do recado.
-     * @param destinatario  Destinatário do recado.
-     * @param recado        Recado.
-     *
-     * @see User
+     * @param message The message to be stored in the Messages object.
      */
-
-    public Messages(User remetente, User destinatario, String recado) {
-        this.remetente = remetente;
-        this.destinatario = destinatario;
-        this.recado = recado;
+    public Messages(String message) {
+        this.message = message;
     }
 
     /**
-     * <p> Retorna o remetente do recado. </p>
+     * <p> Returns the stored message. </p>
      *
-     * @return Remetente do recado.
-     * 
-     * @see User
+     * @return The message stored in the Messages object.
      */
-
-    public User getRemetente() {
-        return this.remetente;
-    }
-
-    /**
-     * <p> Retorna o destinatário do recado. </p>
-     *
-     * @return Destinatário do recado.
-     *
-     * @see User
-     */
-
-    public User getDestinatario() {
-        return this.destinatario;
-    }
-
-    /**
-     * <p> Retorna o recado. </p>
-     *
-     * @return Recado.
-     */
-
-    public String getRecado() {
-        return this.recado;
+    public String getMensagem() {
+        return this.message;
     }
 }

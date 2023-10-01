@@ -1,7 +1,9 @@
 package br.ufal.ic.p2.jackut;
+
 import java.util.ArrayList;
+
 public class UtilsString {
-	public static String formatArrayList(ArrayList<?> arrayList) {
+    public static String formatArrayList(ArrayList<?> arrayList) {
         String formattedString = "{";
         for (int i = 0; i < arrayList.size(); i++) {
             formattedString += arrayList.get(i).toString();

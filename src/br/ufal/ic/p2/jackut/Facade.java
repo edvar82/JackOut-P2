@@ -1,325 +1,417 @@
 package br.ufal.ic.p2.jackut;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import br.ufal.ic.p2.jackut.Exceptions.*;
 
 /**
- * <p> Classe fachada que implementa a interface do sistema Jackut. </p>
+ * <p> Facade class that implements the interface of the Jackut system. </p>
  */
-
 public class Facade {
-    private final System system;
+    private final System system = new System();
+
     /**
-     * <p> Constrói um novo {@code Facade} e inicializa uma instância do {@link System}. </p>
-     * 
-     * <p> Os dados do usuário são carregados de um arquivo caso o arquivo exista. </p>
-     * <p> Os dados carregados incluem informações do usuário, como: atributos, amigos e recados. </p>
+     * <p> Clears all data held in the system. </p>
      *
      * @see System
      */
-
-    public Facade() {
-        this.system = new System();
-
-    }    
-    /**
-     * <p> Apaga todos os dados mantidos no sistema. </p>
-     *
-     * @see System
-     */
-
     public void zerarSistema() {
-    	this.system.zerarSistema();
+        this.system.zerarSistema();
     }
 
     /**
-     * <p> Cria um usuário com os dados da conta fornecidos. </p>
+     * <p> Creates a user with the provided account data. </p>
      *
-     * @param login  Login do usuário
-     * @param senha  Senha do usuário
-     * @param nome   Nome do usuário
+     * @param login  User's login
+     * @param password  User's password
+     * @param name   User's name
      *
-     * @throws InvalidLoginOrPasswordException  Exceção lançada caso o login ou a senha sejam inválidos
-     * @throws AccountAlreadyExistsException        Exceção lançada caso o login já esteja cadastrado
-     * 
+     * @throws LoginSenhaInvalidsException    Exception thrown if the login or password is invalid
+     * @throws AccountAlreadyExistsException Exception thrown if the login is already registered
+     *
      * @see User
      */
+    public void criarUsuario(String login, String password, String name) throws LoginSenhaInvalidsException, AccountAlreadyExistsException {
+        User usuario = new User(login, password, name);
 
-    public void criarUsuario(String login, String senha, String nome) throws InvalidLoginOrPasswordException, AccountAlreadyExistsException {
-        if (login == null) {
-            throw new InvalidLoginOrPasswordException("login");
-        }
-
-        if (senha == null) {
-            throw new InvalidLoginOrPasswordException("senha");
-        }
-
-        if (this.system.getUsuario(login) != null) {
-            throw new AccountAlreadyExistsException();
-        }
-
-        User usuario = new User(login, senha, nome);
         this.system.setUsuario(usuario);
     }
 
     /**
-     * <p> Abre uma sessão para um usuário com o login e a senha fornecidos,
-     * e retorna uma id para esta sessão. </p>
+     * <p> Opens a session for a user with the provided login and password,
+     * and returns an ID for this session. </p>
      *
-     * @param login  Login do usuário
-     * @param senha  Senha do usuário
-     * @return       ID da sessão
+     * @param login User's login
+     * @param senha User's password
+     * @return ID of the session
      *
-     * @throws InvalidLoginOrPasswordException Exceção lançada caso o login ou a senha sejam inválidos
+     * @throws LoginSenhaInvalidsException   Exception thrown if the login or password is invalid
+     * @throws UserIsNotRegisterException  Exception thrown if the user is not registered
      */
-
-    public String abrirSessao(String login, String senha) throws InvalidLoginOrPasswordException {
-        User usuario = this.system.getUsuario(login);
-
-        if (usuario == null) {
-            throw new InvalidLoginOrPasswordException("any");
-        }
-
-        if (!usuario.verificarSenha(senha)) {
-            throw new InvalidLoginOrPasswordException("any");
-        }
-
-        this.system.setSessaoUsuario(usuario);
-
-        return this.system.getSessao(usuario);
+    public String abrirSessao(String login, String senha) throws LoginSenhaInvalidsException, UserIsNotRegisterException {
+        return this.system.abrirSessao(login, senha);
     }
 
     /**
-     * <p> Retorna o valor do atributo de um usuário, armazenado em seu perfil. </p>
+     * <p> Retrieves the value of a user's attribute stored in their profile. </p>
      *
-     * @param login     Login do usuário
-     * @param atributo  Atributo a ser retornado
-     * @return          Valor do atributo
+     * @param login     User's login
+     * @param attribute  Attribute to be returned
+     * @return          Value of the attribute
      *
-     * @throws UserNotRegisteredException   Exceção lançada caso o usuário não esteja cadastrado
-     * @throws UnfilledAttributeException  Exceção lançada caso o atributo não esteja preenchido
+     * @throws UserIsNotRegisterException   Exception thrown if the user is not registered
+     * @throws AttributeNotFilledException  Exception thrown if the attribute is not filled
      */
-
-    public String getAtributoUsuario(String login, String atributo)
-            throws UserNotRegisteredException, UnfilledAttributeException {
+    public String getAtributoUsuario(String login, String attribute)
+            throws UserIsNotRegisterException, AttributeNotFilledException {
         User usuario = this.system.getUsuario(login);
 
-        if (usuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-        if (atributo.equals("nome")) {
-            return usuario.getNome();
-        } else {
-            return usuario.getProfile().getAtributo(atributo);
-        }
+        return usuario.getAtributo(attribute);
     }
 
     /**
-     * <p> Modifica o valor de um atributo do perfil de um usuário para o valor especificado. </p>
-     * <p> Uma sessão válida <b>(identificada por id)</b> deve estar aberta para o usuário
-     * cujo perfil se quer editar </p>
+     * <p> Modifies the value of a user's profile attribute to the specified value. </p>
+     * <p> A valid session <b>(identified by id)</b> must be open for the user
+     * whose profile you want to edit. </p>
      *
-     * @param id        ID da sessão
-     * @param atributo  Atributo a ser modificado
-     * @param valor     Novo valor do atributo
+     * @param id        Session ID
+     * @param attribute  Attribute to be modified
+     * @param valor     New value of the attribute
      *
-     * @throws UserNotRegisteredException Exceção lançada caso o usuário não esteja cadastrado
+     * @throws UserIsNotRegisterException Exception thrown if the user is not registered
      */
-
-    public void editarPerfil(String id, String atributo, String valor)
-            throws UserNotRegisteredException {
+    public void editarPerfil(String id, String attribute, String valor)
+            throws UserIsNotRegisterException {
         User usuario = this.system.getSessaoUsuario(id);
 
-        if (usuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-
-        usuario.getProfile().setAtributo(atributo, valor);
+        usuario.getProfile().setAtributo(attribute, valor);
     }
 
     /**
-     * <p> Adiciona um amigo ao usuário aberto na sessão especificada através de id. </p>
+     * <p> Adds a friend to the user currently logged in through the specified session id. </p>
      *
-     * @param id     ID da sessão
-     * @param amigo  Login do amigo a ser adicionado
+     * @param id     Session ID
+     * @param amigo  Friend's login to be added
      *
-     * @throws UserAlreadyFriendException             Exceção lançada caso o usuário já seja amigo do usuário aberto na sessão
-     * @throws UserNotRegisteredException       Exceção lançada caso o usuário ou o amigo não estejam cadastrados
-     * @throws UserSelfFriendshipException     Exceção lançada caso o usuário tente adicionar a si mesmo como amigo
-     * @throws UserAlreadyRequestedFriendshipException  Exceção lançada caso o usuário já tenha solicitado amizade ao amigo
+     * @throws UserAlreadyHaveRelationException       Exception thrown if the user is already friends with the logged-in user
+     * @throws UserIsNotRegisterException       Exception thrown if the user or friend is not registered
+     * @throws UserAutoRelationException         Exception thrown if the user tries to add themselves as a friend
+     * @throws UserAlreadySentConviteException  Exception thrown if the user has already requested friendship from the friend
+     * @throws UserIsEnemyException             Exception thrown if the user is an enemy of the friend
      */
-
-    public void adicionarAmigo(String id, String amigo) throws UserAlreadyFriendException, UserNotRegisteredException,
-            UserSelfFriendshipException, UserAlreadyRequestedFriendshipException {
+    public void adicionarAmigo(String id, String amigo) throws UserAlreadyHaveRelationException, UserIsNotRegisterException,
+            UserAutoRelationException, UserAlreadySentConviteException, UserIsEnemyException {
         User usuario = this.system.getSessaoUsuario(id);
         User amigoUsuario = this.system.getUsuario(amigo);
 
-        if (amigoUsuario == null || usuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-        if (usuario.getLogin().equals(amigoUsuario.getLogin())) {
-            throw new UserSelfFriendshipException();
-        }
-
-        if (usuario.getAmigos().contains(amigoUsuario) || amigoUsuario.getAmigos().contains(usuario)) {
-            throw new UserAlreadyFriendException();
-        }
-
-        if (usuario.getSolicitacoesEnviadas().contains(amigoUsuario)) {
-            throw new UserAlreadyRequestedFriendshipException();
-        } else if (usuario.getSolicitacoesRecebidas().contains(amigoUsuario)) {
-            usuario.aceitarSolicitacao(amigoUsuario);
-        } else {
-            usuario.enviarSolicitacao(amigoUsuario);
-        }
+        this.system.adicionarAmigo(usuario, amigoUsuario);
     }
 
     /**
-     * <p> Retorna true se os dois usuários são amigos. </p>
+     * <p> Returns true if the two users are friends. </p>
      *
-     * @param login   Login do primeiro usuário
-     * @param amigo   Login do segundo usuário
-     * @return        Booleano indicando se os usuários são amigos
+     * @param login User's login
+     * @param friend Friend's login
+     * @return Boolean indicating if the users are friends
      *
-     * @throws UserNotRegisteredException Exceção lançada caso um dos usuários não esteja cadastrado
+     * @throws UserIsNotRegisterException Exception thrown if one of the users is not registered
      */
-
-    public boolean ehAmigo(String login, String amigo) throws UserNotRegisteredException {
+    public boolean ehAmigo(String login, String friend) throws UserIsNotRegisterException {
         User usuario = this.system.getUsuario(login);
-        User amigoUsuario = this.system.getUsuario(amigo);
+        User amigoUsuario = this.system.getUsuario(friend);
 
-        if (usuario == null || amigoUsuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-        return usuario.getAmigos().contains(amigoUsuario);
+        return usuario.getFriends().contains(amigoUsuario);
     }
 
     /**
-     * <p> Retorna a lista de amigos do usuário especificado. </p>
-     * <p> O retorno é formatado como uma String no formato: <b>{amigo1,amigo2,amigo3,...}</b> </p>
+     * <p> Returns the list of friends of the specified user. </p>
+     * <p> The return is formatted as a String in the format: <b>{friend1,friend2,friend3,...}</b> </p>
      *
-     * @param login  Login do usuário
-     * @return       Lista de amigos do usuário formatada em uma String
+     * @param login User's login
+     * @return List of friends of the user formatted as a String
      *
-     * @throws UserNotRegisteredException Exceção lançada caso o usuário não esteja cadastrado
+     * @throws UserIsNotRegisterException Exception thrown if the user is not registered
      */
-
-    public String getAmigos(String login) throws UserNotRegisteredException {
+    public String getAmigos(String login) throws UserIsNotRegisterException {
         User usuario = this.system.getUsuario(login);
 
-        if (usuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-        String amigos = "{";
-        for (int i = 0; i < usuario.getAmigos().size(); i++) {
-            User amigo = usuario.getAmigos().get(i);
-            amigos += amigo.getLogin();
-            if (i < usuario.getAmigos().size() - 1) {
-                amigos += ",";
-            }
-        }
-
-        amigos += "}";
-        return amigos;
+        return usuario.getAmigosString();
     }
 
     /**
-     * <p> Envia o recado especificado ao destinatário especificado. </p>
-     * <p> Uma sessão válida <b>(identificada por id)</b> deve estar aberta 
-     * para o usuário que deseja enviar o recado. </p>
+     * <p> Sends the specified message to the specified recipient. </p>
+     * <p> A valid session <b>(identified by id)</b> must be open
+     * for the user who wants to send the message. </p>
      *
-     * @param id            ID da sessão
-     * @param destinatario  Login do destinatário
-     * @param recado        Recado a ser enviado
+     * @param id            Session ID
+     * @param destinatario  Recipient's login
+     * @param recado        Message to be sent
      *
-     * @throws UserNotRegisteredException    Exceção lançada caso o usuário ou o destinatário não estejam cadastrados
-     * @throws UserSelfMessageException  Exceção lançada caso o usuário tente enviar um recado para si mesmo
+     * @throws UserIsNotRegisterException    Exception thrown if the user or recipient is not registered
+     * @throws SelfSentErrandException  Exception thrown if the user tries to send a message to themselves
+     * @throws UserIsEnemyException    Exception thrown if the user is an enemy of the recipient
      */
-
-    public void enviarRecado(String id, String destinatario, String recado) throws UserNotRegisteredException, UserSelfMessageException {
+    public void enviarRecado(String id, String destinatario, String recado) throws UserIsNotRegisterException, SelfSentErrandException, UserIsEnemyException {
         User usuario = this.system.getSessaoUsuario(id);
         User destinatarioUsuario = this.system.getUsuario(destinatario);
 
-        if (usuario == null || destinatarioUsuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-        if (usuario.getLogin().equals(destinatarioUsuario.getLogin())) {
-            throw new UserSelfMessageException();
-        }
-
-        usuario.enviarRecado(destinatarioUsuario, recado);
+        this.system.enviarRecado(usuario, destinatarioUsuario, recado);
     }
 
     /**
-     * <p> Retorna o primeiro recado da fila de recados do usuário com a sessão aberta
-     * identificada por id. </p>
+     * <p> Returns the first message in the user's message queue with the open session identified by id. </p>
      *
-     * @param id  ID da sessão
-     * @return    Primeiro recado da fila de recados do usuário
+     * @param id  Session ID
+     * @return    First message in the user's message queue
      *
-     * @throws UserNotRegisteredException  Exceção lançada caso o usuário não esteja cadastrado
-     * @throws NoMessagesException          Exceção lançada caso o usuário não tenha recados na fila
+     * @throws UserIsNotRegisterException  Exception thrown if the user is not registered
+     * @throws DontHaveErrandExcpetion          Exception thrown if the user has no messages in the queue
      */
-
-    public String lerRecado(String id) throws UserNotRegisteredException, NoMessagesException {
+    public String lerRecado(String id) throws UserIsNotRegisterException, DontHaveErrandExcpetion {
         User usuario = this.system.getSessaoUsuario(id);
 
-        if (usuario == null) {
-            throw new UserNotRegisteredException();
-        }
-
-        Messages messages = usuario.getRecado();
-
-        if (messages == null) {
-            throw new NoMessagesException();
-        }
-
-        return messages.getRecado();
+        Errand recado = usuario.getRecado();
+        return recado.getRecado();
     }
 
     /**
-     * <p> Grava o cadastro em arquivo e encerra o programa.</p>
-     * <p> Atingir o final de um script (final de arquivo) é equivalente 
-     * a encontrar este comando. </p>
-     * <p> Neste caso, o comando não tem parâmetros, e salvará nesse momento
-     * apenas os usuários cadastrados. </p>
+     * <p> Creates a community with the provided data. </p>
      *
-     * @throws UnfilledAttributeException Exceção lançada caso algum atributo não esteja preenchido
+     * @param id         Session ID
+     * @param nome       Community name
+     * @param descricao  Community description
+     *
+     * @throws UserIsNotRegisterException  Exception thrown if the user is not registered
+     * @throws CommunityAlreadyExistisException    Exception thrown if the community already exists
      */
+    public void criarComunidade(String id, String nome, String descricao)
+            throws UserIsNotRegisterException, CommunityAlreadyExistisException {
+        User usuario = this.system.getSessaoUsuario(id);
 
-    public void encerrarSistema() throws UnfilledAttributeException {
-        this.system.encerrarSistema();
+        system.criarComunidade(usuario, nome, descricao);
     }
-    
-    public void criarComunidade(String id, String name, String description) 
-    	throws UserNotRegisteredException, ComunidadeAlreadyExistsException{
-    	User usuario = this.system.getSessaoUsuario(id);
-    	
-    	system.criarComunidade(usuario, name, description);
-    	
-    }
-    
-    public String getDescricaoComunidade(String nome) throws ComunidadeNotExistException {
+
+    /**
+     * Retrieves the description of a community by its name.
+     *
+     * @param nome The name of the community.
+     * @return The description of the community.
+     * @throws CommunityNotExistsException If the community does not exist.
+     */
+    public String getDescricaoComunidade(String nome) throws CommunityNotExistsException {
         return this.system.getDescricaoComunidade(nome);
     }
-    
-    public String getDonoComunidade(String nome) throws ComunidadeNotExistException {
+
+    /**
+     * Retrieves the owner of a community by its name.
+     *
+     * @param nome The name of the community.
+     * @return The owner of the community.
+     * @throws CommunityNotExistsException If the community does not exist.
+     */
+    public String getDonoComunidade(String nome) throws CommunityNotExistsException {
         return this.system.getDonoComunidade(nome);
     }
-    
-    public String getMembrosComunidade(String nome) throws ComunidadeNotExistException {
+
+    /**
+     * Retrieves the members of a community by its name.
+     *
+     * @param nome The name of the community.
+     * @return The members of the community.
+     * @throws CommunityNotExistsException If the community does not exist.
+     */
+    public String getMembrosComunidade(String nome) throws CommunityNotExistsException {
         return this.system.getMembrosComunidade(nome);
+    }
+
+    /**
+     * Retrieves the communities associated with a user by their login.
+     *
+     * @param login The login of the user.
+     * @return A string containing the communities associated with the user.
+     * @throws UserIsNotRegisterException If the user is not registered.
+     */
+    public String getComunidades(String login) throws UserIsNotRegisterException {
+        User usuario = this.system.getUsuario(login);
+
+        return this.system.getComunidades(usuario);
+    }
+
+    /**
+     * Adds a user to a community.
+     *
+     * @param id   The ID of the user session.
+     * @param nome The name of the community.
+     * @throws UserIsNotRegisterException      If the user is not registered.
+     * @throws CommunityNotExistsException    If the community does not exist.
+     * @throws UserAlreadyInACommunityException If the user is already a member of another community.
+     */
+    public void adicionarComunidade(String id, String nome)
+            throws UserIsNotRegisterException, CommunityNotExistsException, UserAlreadyInACommunityException {
+        User usuario = this.system.getSessaoUsuario(id);
+
+        this.system.adicionarComunidade(usuario, nome);
+    }
+
+    /**
+     * Reads a message for a user.
+     *
+     * @param id The ID of the user session.
+     * @return The message read by the user.
+     * @throws UserIsNotRegisterException   If the user is not registered.
+     * @throws DontHaveMessagesException   If the user has no messages.
+     */
+    public String lerMensagem(String id) throws UserIsNotRegisterException, DontHaveMessagesException {
+        User usuario = this.system.getSessaoUsuario(id);
+
+        return this.system.lerMensagem(usuario);
+    }
+
+    /**
+     * Sends a message to a community.
+     *
+     * @param id         The ID of the user session.
+     * @param comunidade The name of the community.
+     * @param mensagem   The message to be sent.
+     * @throws UserIsNotRegisterException   If the user is not registered.
+     * @throws CommunityNotExistsException If the community does not exist.
+     */
+    public void enviarMensagem(String id, String comunidade, String mensagem)
+            throws UserIsNotRegisterException, CommunityNotExistsException {
+        this.system.getSessaoUsuario(id);
+        Community comunidadeAlvo = this.system.getComunidade(comunidade);
+
+        this.system.enviarMensagem(comunidadeAlvo, mensagem);
+    }
+
+    /**
+     * Checks if a user is a fan of another user.
+     *
+     * @param login The login of the user.
+     * @param idolo The login of the idol.
+     * @return True if the user is a fan of the idol, false otherwise.
+     */
+    public boolean ehFa(String login, String idolo) {
+        User usuario = this.system.getUsuario(login);
+        User idoloUsuario = this.system.getUsuario(idolo);
+
+        return idoloUsuario.getFas().contains(usuario);
+    }
+
+    /**
+     * Adds a user as an idol (fan) of another user.
+     *
+     * @param id    The ID of the user session.
+     * @param Idolo The login of the idol.
+     * @throws UserIsNotRegisterException       If the user is not registered.
+     * @throws UserAlreadyHaveRelationException If the user already has a relation with the idol.
+     * @throws UserAutoRelationException         If the user is trying to establish a relation with themselves.
+     * @throws UserIsEnemyException             If the user is an enemy of the idol.
+     */
+    public void adicionarIdolo(String id, String Idolo)
+            throws UserIsNotRegisterException, UserAlreadyHaveRelationException, UserAutoRelationException, UserIsEnemyException {
+        User usuario = this.system.getSessaoUsuario(id);
+        User idoloUsuario = this.system.getUsuario(Idolo);
+
+        this.system.adicionarIdolo(usuario, idoloUsuario);
+    }
+
+    /**
+     * Retrieves the fans (idols) of a user by their login.
+     *
+     * @param login The login of the user.
+     * @return A string containing the fans of the user.
+     * @throws UserIsNotRegisterException If the user is not registered.
+     */
+    public String getFas(String login) throws UserIsNotRegisterException {
+        User usuario = this.system.getUsuario(login);
+
+        return this.system.getFas(usuario);
+    }
+
+    /**
+     * Checks if a user is in a romantic relationship (paquera) with another user.
+     *
+     * @param id       The ID of the user session.
+     * @param paquera The login of the person they are in a romantic relationship with.
+     * @return True if the user is in a romantic relationship with the other person, false otherwise.
+     * @throws UserIsNotRegisterException If the user is not registered.
+     */
+    public boolean ehPaquera(String id, String paquera) throws UserIsNotRegisterException {
+        User usuario = this.system.getSessaoUsuario(id);
+        User paqueraUsuario = this.system.getUsuario(paquera);
+
+        return usuario.getCrushes().contains(paqueraUsuario);
+    }
+
+    /**
+     * Adds a user as a romantic partner (paquera) of another user.
+     *
+     * @param id      The ID of the user session.
+     * @param paquera The login of the romantic partner.
+     * @throws UserIsNotRegisterException       If the user is not registered.
+     * @throws UserAlreadyHaveRelationException If the user already has a relation with the romantic partner.
+     * @throws UserAutoRelationException         If the user is trying to establish a relation with themselves.
+     * @throws UserIsEnemyException             If the user is an enemy of the romantic partner.
+     */
+    public void adicionarPaquera(String id, String paquera)
+            throws UserIsNotRegisterException, UserAlreadyHaveRelationException, UserAutoRelationException, UserIsEnemyException {
+        User usuario = this.system.getSessaoUsuario(id);
+        User paqueraUsuario = this.system.getUsuario(paquera);
+
+        this.system.adicionarPaquera(usuario, paqueraUsuario);
+    }
+
+    /**
+     * Retrieves the romantic partners (paqueras) of a user by their login.
+     *
+     * @param id The ID of the user session.
+     * @return A string containing the romantic partners of the user.
+     * @throws UserIsNotRegisterException If the user is not registered.
+     */
+    public String getPaqueras(String id) throws UserIsNotRegisterException {
+        User usuario = this.system.getSessaoUsuario(id);
+
+        return this.system.getPaqueras(usuario);
+    }
+
+    /**
+     * Adds a user as an enemy of another user.
+     *
+     * @param id     The ID of the user session.
+     * @param inimigo The login of the enemy.
+     * @throws UserIsNotRegisterException       If the user is not registered.
+     * @throws UserAlreadyHaveRelationException If the user already has a relation with the enemy.
+     * @throws UserAutoRelationException         If the user is trying to establish a relation with themselves.
+     */
+    public void adicionarInimigo(String id, String inimigo)
+            throws UserIsNotRegisterException, UserAlreadyHaveRelationException, UserAutoRelationException {
+        User usuario = this.system.getSessaoUsuario(id);
+        User inimigoUsuario = this.system.getUsuario(inimigo);
+
+        this.system.adicionarInimigo(usuario, inimigoUsuario);
+    }
+
+    /**
+     * Removes a user from the system.
+     *
+     * @param id The ID of the user session.
+     * @throws UserIsNotRegisterException If the user is not registered.
+     */
+    public void removerUsuario(String id) throws UserIsNotRegisterException {
+        User usuario = this.system.getSessaoUsuario(id);
+
+        this.system.removerUsuario(usuario, id);
+    }
+
+
+    /**
+     * <p> Writes the user registrations to a file and terminates the program.</p>
+     * <p> Reaching the end of a script (end of file) is equivalent to encountering this command. </p>
+     * <p> In this case, the command has no parameters, and will save only the registered users at this moment. </p>
+     *
+     * @throws AttributeNotFilledException Exception thrown if any attribute is not filled
+     */
+
+    public void encerrarSistema() throws AttributeNotFilledException {
+        this.system.encerrarSistema();
     }
 }

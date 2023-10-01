@@ -2,10 +2,11 @@ import easyaccept.EasyAccept;
 
 public class Main {
     public static void main(String[] args) {
-        String[] args1 = { "br.ufal.ic.p2.jackut.Facade", "tests/us5_1.txt" };
-        String[] args2 = { "br.ufal.ic.p2.jackut.Facade", "tests/us5_2.txt" };
-        EasyAccept.main(args1);
-        EasyAccept.main(args2);
-        
+        for (int i = 1; i <= 9; i++) {
+            String[] args2 = { "br.ufal.ic.p2.jackut.Facade", "tests/us" + i + "_1.txt" };
+            String[] args3 = { "br.ufal.ic.p2.jackut.Facade", "tests/us" + i + "_2.txt" };
+            EasyAccept.main(args2);
+            EasyAccept.main(args3);
+        }
     }
 }

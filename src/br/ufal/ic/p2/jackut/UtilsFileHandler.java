@@ -6,10 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
-import br.ufal.ic.p2.jackut.Comunidade;
-import br.ufal.ic.p2.jackut.User;
-import br.ufal.ic.p2.jackut.Exceptions.UnfilledAttributeException;
-
 public class UtilsFileHandler {
     public static void criarPasta() {
         String caminho = "./database";
@@ -33,12 +29,12 @@ public class UtilsFileHandler {
         fw.close();
     }
 
-    public static void salvarUsuarios(Map<String, User> usuarios) throws IOException, UnfilledAttributeException {
+    public static void salvarUsuarios(Map<String, User> usuarios) throws IOException {
         StringBuilder usuariosData = new StringBuilder();
         for (User usuario : usuarios.values()) {
             usuariosData.append(usuario.getLogin()).append(";")
-                    .append(usuario.getSenha()).append(";")
-                    .append(usuario.getNome()).append(";");
+                    .append(usuario.getPassword()).append(";")
+                    .append(usuario.getName()).append(";");
 
             for (String atributo : usuario.getProfile().getAtributos().keySet()) {
                 usuariosData.append(atributo).append(":")
@@ -64,7 +60,7 @@ public class UtilsFileHandler {
     public static void salvarRecados(Map<String, User> usuarios) throws IOException {
         StringBuilder recadosData = new StringBuilder();
         for (User usuario : usuarios.values()) {
-            for (Messages recado : usuario.getRecados()) {
+            for (Errand recado : usuario.getErrands()) {
                 recadosData.append(usuario.getLogin()).append(";")
                         .append(recado.getRemetente().getLogin()).append(";")
                         .append(recado.getRecado()).append("\n");
@@ -74,9 +70,9 @@ public class UtilsFileHandler {
         escreverArquivo("recados.txt", recadosData.toString());
     }
 
-    public static void salvarComunidades(Map<String, Comunidade> comunidades) throws IOException {
+    public static void salvarComunidades(Map<String, Community> comunidades) throws IOException {
         StringBuilder comunidadesData = new StringBuilder();
-        for (Comunidade comunidade : comunidades.values()) {
+        for (Community comunidade : comunidades.values()) {
             String membros = comunidade.getMembrosString();
             comunidadesData.append(comunidade.getCriador().getLogin()).append(";")
                     .append(comunidade.getNome()).append(";")
@@ -87,67 +83,62 @@ public class UtilsFileHandler {
         escreverArquivo("comunidades.txt", comunidadesData.toString());
     }
 
-//    public static void salvarMensagens(Map<String, Usuario> usuarios) throws IOException {
-//        StringBuilder mensagensData = new StringBuilder();
-//        for (Usuario usuario : usuarios.values()) {
-//            for (Mensagem mensagem : usuario.getMensagens()) {
-//                mensagensData.append(usuario.getLogin()).append(";")
-//                        .append(mensagem.getMensagem()).append("\n");
-//            }
-//        }
-//
-//        escreverArquivo("mensagens.txt", mensagensData.toString());
-//    }
+    public static void salvarMensagens(Map<String, User> usuarios) throws IOException {
+        StringBuilder mensagensData = new StringBuilder();
+        for (User usuario : usuarios.values()) {
+            for (Messages mensagem : usuario.getMessages()) {
+                mensagensData.append(usuario.getLogin()).append(";")
+                        .append(mensagem.getMensagem()).append("\n");
+            }
+        }
 
-//    public static void salvarRelacoes(Map<String, Usuario> usuarios) throws IOException {
-//        StringBuilder relacoesData = new StringBuilder();
-//        for (Usuario usuario : usuarios.values()) {
-//            for (Usuario idolo : usuario.getIdolos()) {
-//                relacoesData.append(usuario.getLogin()).append(";")
-//                        .append(idolo.getLogin()).append(";")
-//                        .append("idolo").append("\n");
-//            }
-//
-//            for (Usuario fa : usuario.getFas()) {
-//                relacoesData.append(usuario.getLogin()).append(";")
-//                        .append(fa.getLogin()).append(";")
-//                        .append("fa").append("\n");
-//            }
-//
-//            for (Usuario paquera : usuario.getPaqueras()) {
-//                relacoesData.append(usuario.getLogin()).append(";")
-//                        .append(paquera.getLogin()).append(";")
-//                        .append("paquera").append("\n");
-//            }
-//
-//            for (Usuario paquerasRecebidas : usuario.getPaquerasRecebidas()) {
-//                relacoesData.append(usuario.getLogin()).append(";")
-//                        .append(paquerasRecebidas.getLogin()).append(";")
-//                        .append("paqueraRecebida").append("\n");
-//            }
-//
-//            for (Usuario inimigos : usuario.getInimigos()) {
-//                relacoesData.append(usuario.getLogin()).append(";")
-//                        .append(inimigos.getLogin()).append(";")
-//                        .append("inimigo").append("\n");
-//            }
-//        }
-//
-//        escreverArquivo("relacoes.txt", relacoesData.toString());
-//    }
+        escreverArquivo("mensagens.txt", mensagensData.toString());
+    }
 
-    public static void persistirDados(Map<String, User> usuarios, Map<String, Comunidade> comunidades) throws IOException {
-        try {
-			salvarUsuarios(usuarios);
-		} catch (IOException | UnfilledAttributeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public static void salvarRelacoes(Map<String, User> usuarios) throws IOException {
+        StringBuilder relacoesData = new StringBuilder();
+        for (User usuario : usuarios.values()) {
+            for (User idolo : usuario.getIdols()) {
+                relacoesData.append(usuario.getLogin()).append(";")
+                        .append(idolo.getLogin()).append(";")
+                        .append("idolo").append("\n");
+            }
+
+            for (User fa : usuario.getFas()) {
+                relacoesData.append(usuario.getLogin()).append(";")
+                        .append(fa.getLogin()).append(";")
+                        .append("fa").append("\n");
+            }
+
+            for (User paquera : usuario.getCrushes()) {
+                relacoesData.append(usuario.getLogin()).append(";")
+                        .append(paquera.getLogin()).append(";")
+                        .append("paquera").append("\n");
+            }
+
+            for (User paquerasRecebidas : usuario.getCrushesReceived()) {
+                relacoesData.append(usuario.getLogin()).append(";")
+                        .append(paquerasRecebidas.getLogin()).append(";")
+                        .append("paqueraRecebida").append("\n");
+            }
+
+            for (User inimigos : usuario.getEnemy()) {
+                relacoesData.append(usuario.getLogin()).append(";")
+                        .append(inimigos.getLogin()).append(";")
+                        .append("inimigo").append("\n");
+            }
+        }
+
+        escreverArquivo("relacoes.txt", relacoesData.toString());
+    }
+
+    public static void persistirDados(Map<String, User> usuarios, Map<String, Community> comunidades) throws IOException {
+        salvarUsuarios(usuarios);
         salvarAmigos(usuarios);
         salvarRecados(usuarios);
         salvarComunidades(comunidades);
-//        salvarMensagens(usuarios);
-//        salvarRelacoes(usuarios);
+        salvarMensagens(usuarios);
+        salvarRelacoes(usuarios);
     }
 
     public static void limparArquivos() throws IOException {
@@ -156,6 +147,6 @@ public class UtilsFileHandler {
         escreverArquivo("recados.txt", "");
         escreverArquivo("comunidades.txt", "");
         escreverArquivo("mensagens.txt", "");
-        escreverArquivo("relacoes.txt", "");
+        // escreverArquivo("relacoes.txt", "");
     }
 }
