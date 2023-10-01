@@ -305,8 +305,14 @@ public class System {
      */
 
     public void zerarSistema() {
-        this.users = new HashMap<>();
+    	this.users = new HashMap<>();
         this.sessions = new HashMap<>();
+        this.comunidades = new HashMap<>();
+        try {
+            UtilsFileHandler.limparArquivos();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     public Comunidade getComunidade(String nome) throws ComunidadeNotExistException {
