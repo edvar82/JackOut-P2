@@ -44,6 +44,10 @@ public class Comunidade {
      *
      * @return Descrição da comunidade
      */
+    
+    public String toString() {
+        return this.getNome();
+    }
 
     public String getDescricao() {
     	return description;

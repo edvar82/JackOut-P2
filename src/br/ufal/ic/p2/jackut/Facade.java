@@ -27,78 +27,7 @@ public class Facade {
     public Facade() {
         this.system = new System();
 
-        try{
-            File arquivo = new File("./database/usuarios.txt");
-            if (arquivo.exists()) {
-                String[] dados;
-                String linha;
-
-                BufferedReader br = new BufferedReader(new FileReader(arquivo));
-
-                while ((linha = br.readLine()) != null) {
-                    dados = linha.split(";");
-                    String login = dados[0];
-                    String senha = dados[1];
-                    String nome = "";
-                    if (dados.length > 2) {
-                        nome = dados[2];
-                    }
-
-                    User usuario = new User(login, senha, nome);
-                    for (int i = 3; i < dados.length; i++) {
-                        String[] atributo = dados[i].split(":");
-                        usuario.getPerfil().setAtributo(atributo[0], atributo[1]);
-                    }
-                    this.system.setUsuario(usuario);
-                }
-                br.close();
-            }
-
-            File arquivo2 = new File("./database/amigos.txt");
-            if (arquivo2.exists()) {
-                String[] dados;
-                String linha;
-
-                BufferedReader br = new BufferedReader(new FileReader(arquivo2));
-
-                while ((linha = br.readLine()) != null) {
-                    dados = linha.split(";");
-                    User usuario = this.system.getUsuario(dados[0]);
-
-                    if (dados[1].length() <= 2) {
-                        continue;
-                    }
-
-                    String[] amigos = dados[1].substring(1, dados[1].length() - 1).split(",");
-
-                    for (String amigo : amigos) {
-                        usuario.setAmigo(this.system.getUsuario(amigo));
-                    }
-                }
-                br.close();
-            }
-
-            File arquivo3 = new File("./database/recados.txt");
-            if (arquivo3.exists()) {
-                String[] dados;
-                String linha;
-
-                BufferedReader br = new BufferedReader(new FileReader(arquivo3));
-
-                while ((linha = br.readLine()) != null) {
-                    dados = linha.split(";");
-                    User usuario = this.system.getUsuario(dados[0]);
-                    User amigo = this.system.getUsuario(dados[1]);
-                    String recado = dados[2];
-                    amigo.enviarRecado(usuario, recado);
-                }
-                br.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    }    
     /**
      * <p> Apaga todos os dados mantidos no sistema. </p>
      *
@@ -106,17 +35,7 @@ public class Facade {
      */
 
     public void zerarSistema() {
-        try {
-            File arquivo = new File("./database/usuarios.txt");
-            arquivo.delete();
-            File arquivo2 = new File("./database/amigos.txt");
-            arquivo2.delete();
-            File arquivo3 = new File("./database/recados.txt");
-            arquivo3.delete();
-            this.system.zerarSistema();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    	this.system.zerarSistema();
     }
 
     /**
@@ -198,7 +117,7 @@ public class Facade {
         if (atributo.equals("nome")) {
             return usuario.getNome();
         } else {
-            return usuario.getPerfil().getAtributo(atributo);
+            return usuario.getProfile().getAtributo(atributo);
         }
     }
 
@@ -223,7 +142,7 @@ public class Facade {
         }
 
 
-        usuario.getPerfil().setAtributo(atributo, valor);
+        usuario.getProfile().setAtributo(atributo, valor);
     }
 
     /**
@@ -390,8 +309,8 @@ public class Facade {
 
             for (User usuario : this.system.getUsuarios().values()) {
                 bw.write(usuario.getLogin() + ";" + usuario.getSenha() + ";" + usuario.getNome());
-                for (String atributo : usuario.getPerfil().getAtributos().keySet()) {
-                    bw.write(";" + atributo + ":" + usuario.getPerfil().getAtributo(atributo));
+                for (String atributo : usuario.getProfile().getAtributos().keySet()) {
+                    bw.write(";" + atributo + ":" + usuario.getProfile().getAtributo(atributo));
                 }
                 bw.newLine();
             }

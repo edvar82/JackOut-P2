@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import br.ufal.ic.p2.jackut.Exceptions.UnfilledAttributeException;
+
 /**
  * <p> Classe que representa um usuário. </p>
  */
@@ -41,6 +43,10 @@ public class User {
         this.profile = new Profile();
         this.receivedSolicitations = new ArrayList<>();
         this.sendSolicitations = new ArrayList<>();
+    }
+    
+    public String toString() {
+        return this.getLogin();
     }
 
     /**
@@ -91,10 +97,6 @@ public class User {
      *
      * @see Profile
      */
-
-    public Profile getPerfil() {
-        return this.profile;
-    }
 
     /**
      * <p> Envia uma solicitação de amizade para o usuário passado como parâmetro. </p>
@@ -171,6 +173,18 @@ public class User {
     public Messages getRecado() {
         return this.messages.poll();
     }
+    
+    public Profile getProfile() {
+        return this.profile;
+    }
+    
+    public String getAtributo(String atributo) throws UnfilledAttributeException {
+        if (atributo.equals("nome")) {
+            return this.getNome();
+        } else {
+            return this.getProfile().getAtributo(atributo);
+        }
+    }
 
     /**
      * <p> Adiciona um amigo ao usuário. </p>
@@ -203,6 +217,12 @@ public class User {
     
     public void setParticipanteComunidade(Comunidade comunidade) {
         this.comunidadesParticipantes.add(comunidade);
+    }
+    public String getAmigosString() {
+        return UtilsString.formatArrayList(this.friends);
+    }
+    public ArrayList<Comunidade> getComunidadesParticipantes() {
+        return this.comunidadesParticipantes;
     }
 
 }
